@@ -1,0 +1,98 @@
+
+```{r}
+#fix 5,10,11, 18, 20,28,30,40,45,49,50,51, 54, bc "," doesn't split species
+#save as Paratriatoma2.csv
+```
+
+```{r}
+#add a col yucca in Paratriatoma2.csv
+paratriatoma<-read.csv("C:/Users/huangt/Documents/map_kissing_bug/Paratriatoma2.csv",header=T,sep=',')
+paratriatoma$yucca<-" "
+y<-which((grepl("Yucca",paratriatoma$Locality)==T))
+for (i in y)
+{
+paratriatoma[i,]$yucca<-as.character(as.data.frame(strsplit(as.character(paratriatoma[i,]$Locality),','))[2,])
+}
+head(paratriatoma)
+write.csv(paratriatoma,file="paratriatoma3.csv")
+```
+
+```{r}
+#FIX paratriatoma3.csv (remove Yucca in the col Locality) 
+```
+
+
+```{r}
+
+#combine Locality and county into a new col
+
+paratriatoma$comb<-paste(paratriatoma$Locality,paratriatoma$County,"California",sep=" ")
+
+head(paratriatoma)
+
+```
+
+#prepare locations to feed geocode
+```{r}
+#paratriatoma<-read.csv("C:/Users/huangt/Documents/map_kissing_bug/Paratriatoma2.csv",header=T,sep=',')
+#head(paratriatoma)
+paratriatoma$Locality2<-" "
+# for (i in c(1:dim(paratriatoma)[[1]]))
+# {
+#   if (USGS_cc<-cc[grepl(",", cc$MonitoringLocationIdentifier)==T,])
+#   {
+#   paratriatoma[i,]$Locality2<-as.character(as.data.frame(strsplit(as.character(paratriatoma[i,]$Locality),','))[1,])
+#   }
+# }
+head(paratriatoma)
+
+nn<-which((grepl(",",paratriatoma$comb)==F))
+for (n in nn)
+{
+paratriatoma[n,]$Locality2<-as.character(paratriatoma[n,]$comb)
+}
+
+w<-which((grepl(",",paratriatoma$Locality)==T))
+for (i in w)
+{
+paratriatoma[i,]$Locality2<-as.character(as.data.frame(strsplit(as.character(paratriatoma[i,]$comb),','))[2,])
+}
+head(paratriatoma)
+```
+
+```{r}
+library(ggmap)
+library(googleway)
+paratriatoma$lat<-" "
+paratriatoma$lon<-" "
+lat_lon<-geocode(as.character(paratriatoma$Locality2), source = "dsk")
+paratriatoma$lat<-lat_lon$lat
+paratriatoma$lon<-lat_lon$lon
+tail(paratriatoma,12)
+```
+
+```{r}
+write.csv(paratriatoma,file="paratriatoma_lat_lon_0225.csv")
+```
+
+
+```{r}
+as.data.frame(table(paratriatoma$lat))
+na<-which(is.na(paratriatoma$lat)==T)
+length(na)
+```
+
+```{r}
+#export to para_0225.shp
+
+```
+#ecoregion
+```{r}
+#export to C:\Users\huangt\Documents\map_kissing_bug\eco_t.dbf
+eco<-read.csv("eco_t.csv",header=T,sep=',')
+head(eco)
+#ECOREGION NAMES
+#EV.dbf
+
+```
+
